@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Loja de Recursos</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="nav-bar">
+        <h1>🚀 Minha Loja</h1>
+        <div class="nav-links" id="nav-links">
+            <a href="auth.html">Entrar / Cadastrar</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="filtrarCategoria('todos', this)">Todos</button>
+            <button class="tab-btn" onclick="filtrarCategoria('plugin', this)">Plugins</button>
+            <button class="tab-btn" onclick="filtrarCategoria('mod', this)">Mods</button>
+            <button class="tab-btn" onclick="filtrarCategoria('textura', this)">Texturas</button>
+            <button class="tab-btn" onclick="filtrarCategoria('client', this)">Clients</button>
+        </div>
+        <div id="plugins-grid" class="grid">
+            <p>Carregando...</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        window.onload = () => {
+            atualizarNav();
+            carregarPluginsPublico('todos');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar / Cadastrar</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="nav-bar">
+        <h1>🚀 Minha Loja</h1>
+        <div class="nav-links">
+            <a href="index.html">← Voltar</a>
+        </div>
+    </div>
+
+    <div class="auth-container">
+        <div class="auth-tabs">
+            <button class="auth-tab active" onclick="trocarAba('login', this)">Entrar</button>
+            <button class="auth-tab" onclick="trocarAba('cadastro', this)">Cadastrar</button>
+        </div>
+
+        <!-- Formulário de Login -->
+        <form id="form-login">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="login-email" required>
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="login-senha" required>
+            </div>
+            <button type="submit" class="btn">Entrar</button>
+            <p style="color: var(--text-secondary); font-size: 0.85em; margin-top: 15px; text-align: center;">
+                Após cadastrar, verifique seu email para confirmar a conta!
+            </p>
+        </form>
+
+        <!-- Formulário de Cadastro -->
+        <form id="form-cadastro" style="display: none;">
+            <div class="form-group">
+                <label>Nome de exibição (como vai aparecer nos seus recursos)</label>
+                <input type="text" id="cadastro-nome" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="cadastro-email" required>
+            </div>
+            <div class="form-group">
+                <label>Senha (mínimo 6 caracteres)</label>
+                <input type="password" id="cadastro-senha" minlength="6" required>
+            </div>
+            <button type="submit" class="btn">Criar Conta</button>
+        </form>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        function trocarAba(aba, botao) {
+            document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
+            botao.classList.add('active');
+            document.getElementById('form-login').style.display = aba === 'login' ? 'block' : 'none';
+            document.getElementById('form-cadastro').style.display = aba === 'cadastro' ? 'block' : 'none';
+        }
+
+        document.getElementById('form-login').onsubmit = fazerLogin;
+        document.getElementById('form-cadastro').onsubmit = fazerCadastro;
+    </script>
+</body>
+</html>

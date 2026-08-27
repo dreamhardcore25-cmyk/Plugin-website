@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicar Recurso</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="nav-bar">
+        <h1>🚀 Publicar Recurso</h1>
+        <div class="nav-links" id="nav-links">
+            <a href="index.html">← Voltar</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="aviso-login" style="text-align: center; padding: 40px;">
+            <h2>🔒 Você precisa estar logado para publicar</h2>
+            <a href="auth.html" class="btn" style="display: inline-block; width: auto; padding: 10px 30px; margin-top: 20px;">Fazer Login</a>
+        </div>
+
+        <div id="area-publicar" style="display: none;">
+            <div class="card" style="padding: 20px; max-width: 600px; margin: 20px auto;">
+                <h2>Publicar Novo Recurso</h2>
+                <form id="plugin-form">
+                    <div class="form-group">
+                        <label>Categoria</label>
+                        <select id="categoria" required>
+                            <option value="plugin">Plugin</option>
+                            <option value="mod">Mod</option>
+                            <option value="textura">Textura</option>
+                            <option value="client">Client</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome</label>
+                        <input type="text" id="nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <textarea id="descricao" rows="3" required></textarea>
+                    </div>
+                    <div class="checkbox-group" onclick="document.getElementById('is_gratis').click()">
+                        <input type="checkbox" id="is_gratis" onchange="togglePreco()">
+                        <label for="is_gratis">Este recurso é <strong style="color: var(--primary);">GRÁTIS</strong></label>
+                    </div>
+                    <div class="form-group" id="preco-group">
+                        <label>Preço (R$)</label>
+                        <input type="number" id="preco" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>URL da Imagem (use imgur.com ou discord)</label>
+                        <input type="url" id="imagem_url" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Link de Download (mediafire, google drive, etc)</label>
+                        <input type="url" id="download_url" required>
+                    </div>
+                    <button type="submit" class="btn">Publicar Recurso</button>
+                </form>
+            </div>
+
+            <h2 style="text-align: center; margin-top: 40px;">Meus Recursos Publicados</h2>
+            <div id="meus-recursos" class="grid"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        window.onload = async () => {
+            await atualizarNav();
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                document.getElementById('aviso-login').style.display = 'none';
+                document.getElementById('area-publicar').style.display = 'block';
+                carregarMeusRecursos();
+            }
+        };
+        document.getElementById('plugin-form').onsubmit = adicionarPlugin;
+    </script>
+</body>
+</html>
