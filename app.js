@@ -20,7 +20,7 @@ async function fazerCadastro(e) {
     if (error) {
         alert('Erro: ' + error.message);
     } else {
-        alert('Conta criada! Verifique seu email para confirmar. Depois faça login.');
+        alert('Conta criada! Agora faça login.');
         window.location.href = 'auth.html';
     }
 }
@@ -48,7 +48,6 @@ async function fazerLogout() {
     window.location.href = 'index.html';
 }
 
-// Atualiza a barra de navegação (mostra login ou logout)
 async function atualizarNav() {
     const nav = document.getElementById('nav-links');
     if (!nav) return;
@@ -63,32 +62,29 @@ async function atualizarNav() {
             <a href="#" onclick="fazerLogout()" class="btn-logout">Sair</a>
         `;
     } else {
-        nav.innerHTML = `
-            <a href="publicar.html">📤 Publicar</a>
-            <a href="auth.html">Entrar / Cadastrar</a>
-        `;
+        nav.innerHTML = `<a href="auth.html">Entrar / Cadastrar</a>`;
     }
 }
 
 // ==================== PÁGINA PÚBLICA ====================
 
-async function carregarPluginsPublico(categoriaFiltro) {
+async function carregarPluginsPublico() {
     const grid = document.getElementById('plugins-grid');
     if (!grid) return;
     grid.innerHTML = '<p>Carregando...</p>';
 
-    let query = supabase.from('plugins').select('*').order('id', { ascending: false });
-    if (categoriaFiltro !== 'todos') {
-        query = query.eq('categoria', categoriaFiltro);
-    }
-    const { data, error } = await query;
+    const { data, error } = await supabase
+        .from('plugins')
+        .select('*')
+        .order('id', { ascending: false });
 
     if (error) {
         grid.innerHTML = '<p>Erro ao carregar.</p>';
+        console.error('Erro:', error);
         return;
     }
     if (data.length === 0) {
-        grid.innerHTML = '<p>Nenhum item encontrado.</p>';
+        grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Nenhum arquivo disponível no momento.</p>';
         return;
     }
 
@@ -102,7 +98,7 @@ async function carregarPluginsPublico(categoriaFiltro) {
             <div class="card">
                 <img src="${item.imagem_url}" alt="${item.nome}" onerror="this.src='https://via.placeholder.com/300x150?text=Sem+Imagem'">
                 <div class="card-content">
-                    <span style="background: #333; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.75em; text-transform: uppercase;">${item.categoria}</span>
+                    <span style="background: #333; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.75em; text-transform: uppercase;">${item.categoria || 'Arquivo'}</span>
                     <h3>${item.nome}</h3>
                     <p>${item.descricao}</p>
                     ${precoHTML}
@@ -114,19 +110,16 @@ async function carregarPluginsPublico(categoriaFiltro) {
     }).join('');
 }
 
-function filtrarCategoria(categoria, botao) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    botao.classList.add('active');
-    carregarPluginsPublico(categoria);
-}
-
 // ==================== PUBLICAR RECURSOS ====================
 
 function togglePreco() {
-    const isGratis = document.getElementById('is_gratis').checked;
+    const isGratis = document.getElementById('is_gratis');
+    if (!isGratis) return;
+    
     const precoGroup = document.getElementById('preco-group');
     const precoInput = document.getElementById('preco');
-    if (isGratis) {
+    
+    if (isGratis.checked) {
         precoGroup.classList.add('disabled');
         precoInput.required = false;
         precoInput.value = '';
@@ -146,8 +139,10 @@ async function adicionarPlugin(event) {
     }
 
     const isGratis = document.getElementById('is_gratis').checked;
+    const categoriaSelect = document.getElementById('categoria');
+    
     const novoItem = {
-        categoria: document.getElementById('categoria').value,
+        categoria: categoriaSelect ? categoriaSelect.value : 'arquivo',
         nome: document.getElementById('nome').value,
         descricao: document.getElementById('descricao').value,
         preco: isGratis ? 0 : document.getElementById('preco').value,
@@ -165,10 +160,11 @@ async function adicionarPlugin(event) {
     const { error } = await supabase.from('plugins').insert([novoItem]);
     if (error) {
         alert('Erro: ' + error.message);
+        console.error('Erro:', error);
     } else {
-        alert('Recurso publicado com sucesso!');
+        alert('Arquivo publicado com sucesso!');
         document.getElementById('plugin-form').reset();
-        togglePreco();
+        if (document.getElementById('is_gratis')) togglePreco();
         carregarMeusRecursos();
     }
 }
@@ -208,7 +204,7 @@ async function carregarMeusRecursos() {
 }
 
 async function deletarPlugin(id) {
-    if (!confirm('Excluir este recurso?')) return;
+    if (!confirm('Excluir este arquivo?')) return;
     const { error } = await supabase.from('plugins').delete().eq('id', id);
     if (error) alert('Erro: ' + error.message);
     else {
